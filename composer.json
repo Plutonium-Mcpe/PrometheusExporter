@@ -1,0 +1,23 @@
+{
+    "name": "plutonium/prometheus-exporter",
+    "description": "Prometheus exporter for PocketMine-MP",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Plutonium\\PrometheusExporter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Plutonium SAS",
+            "email": "contact@plutonium.best"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "amphp/http-server": "^2.0",
+        "amphp/http-server-router": "^1.0",
+        "promphp/prometheus_client_php": "^2.7"
+    }
+}

@@ -1,0 +1,8 @@
+name: PrometheusExporter
+version: 0.0.1
+api: ["5.0.0"]
+main: Plutonium\PrometheusExporter\PrometheusExporter
+src-namespace-prefix: Plutonium\PrometheusExporter
+
+authors:
+  - Plutonium SAS (https://www.plutonium.best)

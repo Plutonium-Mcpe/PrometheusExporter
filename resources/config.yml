@@ -1,0 +1,5 @@
+# PocketMine-MP Prometheus Exporter
+host: "0.0.0.0"
+# Port Setting. By default, set to 9655.
+# Or editing this, recommend 9100-9999 (Exporter generally use)
+port: 9655

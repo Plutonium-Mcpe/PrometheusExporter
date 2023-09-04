@@ -1,0 +1,8 @@
+.fleet/
+vendor/
+.php-cs-fixer.cache
+bin/
+dev/
+.idea/*
+!.idea/codeStyles/
+!.idea/fileTemplates/
