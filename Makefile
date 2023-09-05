@@ -8,6 +8,7 @@ COMPOSER = ${shell pwd}/dev/composer.phar
 PHP_CS_FIXER = ${shell pwd}/vendor/bin/php-cs-fixer
 
 EXTENSION_DIR = $(shell find "$(shell pwd)/bin" -name "*debug-zts*" | tail -n 1)
+PLUGIN_SOURCE_FILES = plugin.yml $(shell find src resources -type f) vendor
 $(shell mkdir -p dev)
 
 cs: vendor
@@ -27,6 +28,13 @@ php/version: Makefile
 
 dev/composer.phar: Makefile
 	cd dev && wget -O - https://getcomposer.org/installer | $(PHP)
+
+dev/ConsoleScript.php: Makefile
+	wget -O $@ https://github.com/pmmp/DevTools/raw/stable/src/ConsoleScript.php
+	touch $@
+
+dev/PrometheusExporter.phar: $(ENGINE_SOURCE_FILES) dev/ConsoleScript.php
+	$(PHP) dev/ConsoleScript.php --make plugin.yml,src,resources,vendor --out $@
 
 phpstan: vendor
 	PATH=$$PATH:$(PHP_DIR) php vendor/bin/phpstan analyse --memory-limit=2G

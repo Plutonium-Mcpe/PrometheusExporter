@@ -1,0 +1,53 @@
+name: Draft release
+
+on:
+  push:
+    branches:
+      - stable
+  workflow_dispatch:
+
+jobs:
+  draft:
+    name: Create GitHub draft release
+    if: "startsWith(github.event.head_commit.message, 'Release ')"
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.25.2
+        with:
+          php-version: 8.2
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
+
+      - name: Build PrometheusExporter.phar
+        run: make dev/PrometheusExporter.phar
+
+      - name: Get release version
+        id: get-release-version
+        run: |
+          echo ::set-output name=PLUGIN_VERSION::$(php .github/workflows/get-current-plugin-version.php)
+
+      - name: Create release
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          artifacts: ${{ github.workspace }}/dev/PrometheusExporter.phar
+          commit: ${{ github.sha }}
+          name: PrometheusExporter ${{ steps.get-release-version.outputs.PLUGIN_VERSION }}
+          tag: ${{ steps.get-release-version.outputs.PLUGIN_VERSION }}
+          body: "**PrometheusExporter new release**"
