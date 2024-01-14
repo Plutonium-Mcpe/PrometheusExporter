@@ -1,6 +1,6 @@
 <?php
 
-namespace Plutonium\PrometheusExporter\Exporter;
+namespace Plutonium\PrometheusExporter\exporter;
 
 use const Plutonium\COMPOSER_AUTOLOADER_PATH;
 use Plutonium\PrometheusExporter\PrometheusExporter;

@@ -3,7 +3,7 @@
 namespace Plutonium\PrometheusExporter;
 
 use const Plutonium\COMPOSER_AUTOLOADER_PATH;
-use Plutonium\PrometheusExporter\Exporter\ExporterInterface;
+use Plutonium\PrometheusExporter\exporter\ExporterInterface;
 use Plutonium\PrometheusExporter\metrics\MetricsManager;
 use Plutonium\PrometheusExporter\tasks\ComposerRegisterAsyncTask;
 use Plutonium\PrometheusExporter\timings\Timing;

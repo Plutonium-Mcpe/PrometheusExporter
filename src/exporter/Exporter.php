@@ -1,6 +1,6 @@
 <?php
 
-namespace Plutonium\PrometheusExporter\Exporter;
+namespace Plutonium\PrometheusExporter\exporter;
 
 use Amp\Http\Server\HttpServer;
 use Amp\Http\Server\RequestHandler\CallableRequestHandler;
