@@ -1,9 +1,9 @@
-name: Build Docker Image on Tag
+name: Build Docker Image on Release
 
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -29,5 +29,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/plutonium-mcpe/prometheusexporter:${{ github.ref_name }}
+            ghcr.io/plutonium-mcpe/prometheusexporter:${{ github.event.release.tag_name }}
             ghcr.io/plutonium-mcpe/prometheusexporter:latest
