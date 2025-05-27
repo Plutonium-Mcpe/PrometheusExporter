@@ -18,9 +18,9 @@ cs/diff: vendor
 	$(PHP) $(PHP_CS_FIXER) fix --dry-run --diff --ansi
 
 php/install: Makefile
-	wget https://github.com/pmmp/PHP-Binaries/releases/download/php-8.2-latest/PHP-Linux-x86_64-PM5.tar.gz
-	tar -xzf PHP-Linux-x86_64-PM5.tar.gz
-	rm PHP-Linux-x86_64-PM5.tar.gz
+	wget https://github.com/pmmp/PHP-Binaries/releases/download/pm5-php-8.2-latest/PHP-8.2-Linux-x86_64-PM5.tar.gz
+	tar -xzf PHP-8.2-Linux-x86_64-PM5.tar.gz
+	rm PHP-8.2-Linux-x86_64-PM5.tar.gz
 	grep -q '^extension_dir' bin/php7/bin/php.ini && sed -i'bak' "s{^extension_dir=.*{extension_dir=\"$(EXTENSION_DIR)\"{" bin/php7/bin/php.ini || echo "extension_dir=\"$(EXTENSION_DIR)\"" >> bin/php7/bin/php.ini
 
 php/version: Makefile
@@ -50,3 +50,6 @@ composer/install: dev/composer.phar
 
 composer/require: dev/composer.phar
 	$(PHP) $(COMPOSER) require $(filter-out $@,$(MAKECMDGOALS))
+
+composer/install/prod: dev/composer.phar
+	$(PHP) $(COMPOSER) install --no-dev --optimize-autoloader
