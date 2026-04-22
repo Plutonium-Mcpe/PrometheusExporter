@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && \
-    apt-get install -y wget cmake
+    apt-get install -y wget cmake make
 
 COPY . /app
 

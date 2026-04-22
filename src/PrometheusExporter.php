@@ -51,10 +51,10 @@ class PrometheusExporter extends PluginBase {
 
 		Timing::init();
 		$this->exporter = new ExporterInterface($this);
-		$this->metricsManager = new MetricsManager($this);
 	}
 
 	protected function onEnable() : void {
+		$this->metricsManager = new MetricsManager($this);
 		$this->exporter->start();
 	}
 
