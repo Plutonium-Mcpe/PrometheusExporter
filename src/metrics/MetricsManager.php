@@ -30,16 +30,21 @@ class MetricsManager {
 		$metrics = [
 			MemoryHeapBytes::class,
 			MemoryMainThreadBytes::class,
+			PlayerMaxCount::class,
 			PlayerOnlineCount::class,
+			PlayerPing::class,
 			ThreadCount::class,
 			TicksPerSecond::class,
 			TickUsage::class,
+			UptimeSeconds::class,
 			ViewDistance::class,
 			WorldChunkLoaded::class,
 			WorldEntityCount::class,
 			WorldLoaded::class,
 			WorldPlayerCount::class,
-			WorldTickRate::class
+			WorldTickRate::class,
+			NetworkBytes::class,
+			ChunkGenerationCount::class,
 		];
 
 		foreach ($metrics as $metric) {
@@ -49,7 +54,9 @@ class MetricsManager {
 
 	public static function registerMetric(Metric $metric) : Metric {
 		self::$metrics[$metric->getName()] = $metric;
-		PrometheusExporter::getInstance()->getLogger()->debug("Metric '" . $metric->getName() . "' successfully registered.");
+		$plugin = PrometheusExporter::getInstance();
+		$plugin->getLogger()->debug("Metric '" . $metric->getName() . "' successfully registered.");
+		$metric->onRegister($plugin);
 
 		return $metric;
 	}
