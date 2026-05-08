@@ -36,7 +36,13 @@ class PrometheusExporter extends PluginBase {
 		$this->saveDefaultConfig();
 
 		if (is_file(COMPOSER_AUTOLOADER_PATH)) {
-			require_once(COMPOSER_AUTOLOADER_PATH);
+			$prevErrorReporting = error_reporting();
+			error_reporting($prevErrorReporting & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+			try {
+				require_once(COMPOSER_AUTOLOADER_PATH);
+			} finally {
+				error_reporting($prevErrorReporting);
+			}
 
 			$asyncPool = $this->getServer()->getAsyncPool();
 			$asyncPool->addWorkerStartHook(function (int $workerId) use ($asyncPool) : void {

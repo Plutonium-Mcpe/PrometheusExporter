@@ -14,6 +14,12 @@ class ComposerRegisterAsyncTask extends AsyncTask {
 	}
 
 	public function onRun() : void {
-		require $this->autoloaderPath;
+		$prevErrorReporting = error_reporting();
+		error_reporting($prevErrorReporting & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+		try {
+			require $this->autoloaderPath;
+		} finally {
+			error_reporting($prevErrorReporting);
+		}
 	}
 }

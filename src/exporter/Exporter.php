@@ -57,7 +57,13 @@ class Exporter extends Thread {
 			register_shutdown_function([$this, 'shutdownHandler']);
 
 			if ($this->autoloaderPath !== null) {
-				require $this->autoloaderPath;
+				$prevErrorReporting = error_reporting();
+				error_reporting($prevErrorReporting & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+				try {
+					require $this->autoloaderPath;
+				} finally {
+					error_reporting($prevErrorReporting);
+				}
 			}
 
 			$this->synchronized(function () : void {
