@@ -1,4 +1,8 @@
 parameters:
     level: 8
+    phpVersion: 80200
     paths:
         - src
+    scanFiles:
+        - vendor/plutonium/pocketmine-mp/src/PocketMine.php
+        - tests/phpstan/stubs/pmmpthread.stub

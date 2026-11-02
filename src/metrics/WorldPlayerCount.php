@@ -10,6 +10,10 @@ class WorldPlayerCount extends Metric {
 		return "world_player_count";
 	}
 
+	public function isSnapshot() : bool {
+		return true;
+	}
+
 	public function collect(RegistryInterface $registry) : void {
 		$gauge = $registry
 			->getOrRegisterGauge(Metric::PREFIX, $this->getName(), "Count of players per world", ["world", "world_folder"]);

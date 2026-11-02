@@ -8,7 +8,9 @@ COMPOSER = ${shell pwd}/dev/composer.phar
 PHP_CS_FIXER = ${shell pwd}/vendor/bin/php-cs-fixer
 
 EXTENSION_DIR = $(shell find "$(shell pwd)/bin" -name "*debug-zts*" | tail -n 1)
-PLUGIN_SOURCE_FILES = plugin.yml $(shell find src resources -type f) vendor
+DEVTOOLS_COMMIT = 37a4db84df23f26f26fa4d1431abc279e99c0540
+# vendor must not be a prerequisite: its target runs a composer install with dev dependencies, which would end up in the phar
+PLUGIN_SOURCE_FILES = plugin.yml composer.lock $(shell find src resources -type f)
 $(shell mkdir -p dev)
 
 cs: vendor
@@ -30,10 +32,10 @@ dev/composer.phar: Makefile
 	cd dev && wget -O - https://getcomposer.org/installer | $(PHP)
 
 dev/ConsoleScript.php: Makefile
-	wget -O $@ https://github.com/pmmp/DevTools/raw/stable/src/ConsoleScript.php
+	wget -O $@ https://github.com/pmmp/DevTools/raw/$(DEVTOOLS_COMMIT)/src/ConsoleScript.php
 	touch $@
 
-dev/PrometheusExporter.phar: $(ENGINE_SOURCE_FILES) dev/ConsoleScript.php
+dev/PrometheusExporter.phar: $(PLUGIN_SOURCE_FILES) dev/ConsoleScript.php
 	$(PHP) dev/ConsoleScript.php --make plugin.yml,src,resources,vendor --out $@
 
 phpstan: vendor

@@ -8,11 +8,13 @@ use Plutonium\PrometheusExporter\metrics\MetricsManager;
 use Plutonium\PrometheusExporter\tasks\ComposerRegisterAsyncTask;
 use Plutonium\PrometheusExporter\timings\Timing;
 use function pocketmine\critical_error;
+use pocketmine\plugin\DisablePluginException;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginDescription;
 use pocketmine\plugin\PluginLoader;
 use pocketmine\plugin\ResourceProvider;
 use pocketmine\Server;
+use RuntimeException;
 
 require_once __DIR__ . '/CoreConstants.php';
 
@@ -31,8 +33,6 @@ class PrometheusExporter extends PluginBase {
 	}
 
 	protected function onLoad() : void {
-		date_default_timezone_set('UTC');
-
 		$this->saveDefaultConfig();
 
 		if (is_file(COMPOSER_AUTOLOADER_PATH)) {
@@ -61,7 +61,17 @@ class PrometheusExporter extends PluginBase {
 
 	protected function onEnable() : void {
 		$this->metricsManager = new MetricsManager($this);
-		$this->exporter->start();
+		try {
+			$this->exporter->start();
+		} catch (RuntimeException $e) {
+			$this->getLogger()->error($e->getMessage());
+
+			throw new DisablePluginException();
+		}
+	}
+
+	protected function onDisable() : void {
+		$this->exporter->stop();
 	}
 
 	public function getExporter() : ExporterInterface {

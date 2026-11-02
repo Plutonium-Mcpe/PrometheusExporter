@@ -14,24 +14,15 @@ class PlayerPing extends Metric {
 		$gauge = $registry
 			->getOrRegisterGauge(Metric::PREFIX, $this->getName(), "Player ping in milliseconds", ["aggregation"]);
 
-		$players = Server::getInstance()->getOnlinePlayers();
-		if (count($players) === 0) {
-			$gauge->set(0, ["average"]);
-			$gauge->set(0, ["max"]);
-			return;
-		}
-
-		$total = 0;
-		$max = 0;
-		foreach ($players as $player) {
+		$pings = [];
+		foreach (Server::getInstance()->getOnlinePlayers() as $player) {
 			$ping = $player->getNetworkSession()->getPing();
-			$total += $ping;
-			if ($ping > $max) {
-				$max = $ping;
+			if ($ping !== null) {
+				$pings[] = $ping;
 			}
 		}
 
-		$gauge->set((int) ($total / count($players)), ["average"]);
-		$gauge->set($max, ["max"]);
+		$gauge->set($pings === [] ? 0 : (int) (array_sum($pings) / count($pings)), ["average"]);
+		$gauge->set($pings === [] ? 0 : max($pings), ["max"]);
 	}
 }

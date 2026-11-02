@@ -2,6 +2,7 @@
 
 namespace Plutonium\PrometheusExporter\metrics;
 
+use Closure;
 use Plutonium\PrometheusExporter\PrometheusExporter;
 use Plutonium\PrometheusExporter\timings\Timing;
 use Prometheus\CollectorRegistry;
@@ -9,6 +10,7 @@ use Prometheus\RegistryInterface;
 use Prometheus\RendererInterface;
 use Prometheus\RenderTextFormat;
 use Prometheus\Storage\InMemory;
+use Throwable;
 
 class MetricsManager {
 	private RendererInterface $renderer;
@@ -53,35 +55,56 @@ class MetricsManager {
 	}
 
 	public static function registerMetric(Metric $metric) : Metric {
-		self::$metrics[$metric->getName()] = $metric;
 		$plugin = PrometheusExporter::getInstance();
-		$plugin->getLogger()->debug("Metric '" . $metric->getName() . "' successfully registered.");
+		$name = $metric->getName();
+		if (isset(self::$metrics[$name])) {
+			$plugin->getLogger()->warning("Metric '" . $name . "' is already registered by " . self::$metrics[$name]::class . ", replacing it with " . $metric::class . ".");
+		}
+		self::$metrics[$name] = $metric;
+		$plugin->getLogger()->debug("Metric '" . $name . "' successfully registered.");
 		$metric->onRegister($plugin);
 
 		return $metric;
 	}
 
-	private function collect() : void {
-		Timing::$collectResultTimer->time(function () {
+	private function collect(RegistryInterface $snapshotRegistry) : void {
+		Timing::$collectResultTimer->time(function () use ($snapshotRegistry) {
 			foreach (self::$metrics as $metric) {
-				Timing::getMetricsCollecterTimings($metric)->time(function () use ($metric) {
-					$metric->collect($this->registry);
+				$registry = $metric->isSnapshot() ? $snapshotRegistry : $this->registry;
+				Timing::getMetricsCollecterTimings($metric)->time(function () use ($metric, $registry) {
+					$this->runSafely($metric, fn () => $metric->collect($registry));
 				});
 			}
 
 			foreach (self::$metrics as $metric) {
 				Timing::getMetricsPostCollectCollecterTimings($metric)->time(function () use ($metric) {
-					$metric->postCollect();
+					$this->runSafely($metric, fn () => $metric->postCollect());
 				});
 			}
 		});
 	}
 
-	public function render() : string {
-		$this->collect();
+	/**
+	 * @param Closure() : void $closure
+	 */
+	private function runSafely(Metric $metric, Closure $closure) : void {
+		try {
+			$closure();
+		} catch (Throwable $e) {
+			$this->plugin->getLogger()->error("Metric '" . $metric->getName() . "' failed to collect: " . $e->getMessage());
+			$this->plugin->getLogger()->logException($e);
+		}
+	}
 
-		return Timing::$renderResultTimer->time(function () {
-			return $this->renderer->render($this->registry->getMetricFamilySamples());
+	public function render() : string {
+		$snapshotRegistry = new CollectorRegistry(new InMemory(), false);
+		$this->collect($snapshotRegistry);
+
+		return Timing::$renderResultTimer->time(function () use ($snapshotRegistry) {
+			return $this->renderer->render([
+				...$this->registry->getMetricFamilySamples(),
+				...$snapshotRegistry->getMetricFamilySamples(),
+			]);
 		});
 	}
 }

@@ -12,6 +12,10 @@ abstract class Metric {
 
 	public abstract function collect(RegistryInterface $registry) : void;
 
+	public function isSnapshot() : bool {
+		return false;
+	}
+
 	public function postCollect() : void {
 	}
 

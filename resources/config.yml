@@ -1,5 +1,10 @@
 # PocketMine-MP Prometheus Exporter
-host: "0.0.0.0"
+# Listening address. The exporter has no authentication: by default, it only listens on the loopback interface.
+# Set it to a private IP (or "0.0.0.0") only if Prometheus runs on another host, behind a firewall.
+host: "127.0.0.1"
 # Port Setting. By default, set to 9655.
 # Or editing this, recommend 9100-9999 (Exporter generally use)
 port: 9655
+# Interval, in seconds, at which the main thread collects the metrics. Scrapes are served from the last collection,
+# so this should not be greater than the Prometheus scrape interval.
+refresh-interval: 5

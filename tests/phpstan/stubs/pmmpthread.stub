@@ -1,0 +1,124 @@
+<?php
+
+namespace pmmp\thread;
+
+/**
+ * @implements \IteratorAggregate<array-key, mixed>
+ */
+abstract class ThreadSafe implements \IteratorAggregate{
+	/**
+	 * @template TReturn
+	 * @param \Closure() : TReturn $function
+	 * @param mixed ...$args
+	 * @return TReturn
+	 */
+	public function synchronized(\Closure $function, mixed ...$args) : mixed{}
+
+	public function wait(int $timeout = 0) : bool{}
+
+	public function notify() : bool{}
+
+	public function notifyOne() : bool{}
+
+	public function getIterator() : \Iterator{}
+}
+
+/**
+ * @template TKey of array-key
+ * @template TValue
+ * @implements \ArrayAccess<TKey, TValue>
+ */
+final class ThreadSafeArray extends ThreadSafe implements \Countable, \ArrayAccess{
+	/**
+	 * @return TValue|null
+	 */
+	public function pop() : mixed{}
+
+	/**
+	 * @return TValue|null
+	 */
+	public function shift() : mixed{}
+
+	public function count() : int{}
+
+	/**
+	 * @template TFromKey of array-key
+	 * @template TFromValue
+	 * @param array<TFromKey, TFromValue> $array
+	 * @return ThreadSafeArray<TFromKey, TFromValue>
+	 */
+	public static function fromArray(array $array) : ThreadSafeArray{}
+
+	/**
+	 * @param TKey $offset
+	 */
+	public function offsetExists(mixed $offset) : bool{}
+
+	/**
+	 * @param TKey $offset
+	 * @return TValue
+	 */
+	public function offsetGet(mixed $offset) : mixed{}
+
+	/**
+	 * @param TKey|null $offset
+	 * @param TValue $value
+	 */
+	public function offsetSet(mixed $offset, mixed $value) : void{}
+
+	/**
+	 * @param TKey $offset
+	 */
+	public function offsetUnset(mixed $offset) : void{}
+}
+
+abstract class Runnable extends ThreadSafe{
+	abstract public function run() : void;
+
+	public function isRunning() : bool{}
+
+	public function isTerminated() : bool{}
+}
+
+abstract class Thread extends Runnable{
+	public const INHERIT_NONE = 0;
+	public const INHERIT_INI = 0x1;
+	public const INHERIT_CONSTANTS = 0x10;
+	public const INHERIT_FUNCTIONS = 0x100;
+	public const INHERIT_CLASSES = 0x1000;
+	public const INHERIT_INCLUDES = 0x10000;
+	public const INHERIT_COMMENTS = 0x100000;
+	public const INHERIT_ALL = 0x111111;
+
+	public function start(int $options = self::INHERIT_ALL) : bool{}
+
+	public function join() : bool{}
+
+	public function isJoined() : bool{}
+
+	public function isStarted() : bool{}
+
+	public function getThreadId() : int{}
+
+	public function getCreatorId() : int{}
+
+	public static function getCurrentThread() : ?Thread{}
+
+	public static function getCurrentThreadId() : int{}
+}
+
+abstract class Worker extends Thread{
+	public function stack(Runnable $work) : int{}
+
+	public function unstack() : ?Runnable{}
+
+	public function getStacked() : int{}
+
+	public function isShutdown() : bool{}
+
+	public function shutdown() : bool{}
+
+	public function collect(?\Closure $function = null) : int{}
+
+	public function collector(Runnable $collectable) : bool{}
+}
