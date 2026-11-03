@@ -9,6 +9,10 @@ class NetworkBytes extends Metric {
 		return "network_bytes";
 	}
 
+	public function isSnapshot() : bool {
+		return true;
+	}
+
 	public function collect(RegistryInterface $registry) : void {
 		$rxGauge = $registry->getOrRegisterGauge(Metric::PREFIX, "network_bytes_received_total", "Total bytes received since boot", ["interface"]);
 		$txGauge = $registry->getOrRegisterGauge(Metric::PREFIX, "network_bytes_sent_total", "Total bytes sent since boot", ["interface"]);

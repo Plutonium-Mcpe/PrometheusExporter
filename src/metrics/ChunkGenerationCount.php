@@ -5,6 +5,7 @@ namespace Plutonium\PrometheusExporter\metrics;
 use pocketmine\event\Listener;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 use Prometheus\RegistryInterface;
 
 class ChunkGenerationCount extends Metric implements Listener {
@@ -16,7 +17,7 @@ class ChunkGenerationCount extends Metric implements Listener {
 	}
 
 	public function onRegister(Plugin $plugin) : void {
-		$plugin->getServer()->getPluginManager()->registerEvents($this, $plugin);
+		Server::getInstance()->getPluginManager()->registerEvents($this, $plugin);
 	}
 
 	public function onChunkPopulate(ChunkPopulateEvent $event) : void {

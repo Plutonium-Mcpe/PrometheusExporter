@@ -1,0 +1,46 @@
+name: Checks
+
+on:
+  push:
+    branches:
+      - stable
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: PHPStan and php-cs-fixer
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.40.0
+        with:
+          php-version: 8.4
+          coverage: none
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-dev-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-dev-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --ignore-platform-reqs
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress --error-format=github
+
+      - name: Run php-cs-fixer
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff

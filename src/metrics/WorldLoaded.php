@@ -10,6 +10,10 @@ class WorldLoaded extends Metric {
 		return "world_loaded";
 	}
 
+	public function isSnapshot() : bool {
+		return true;
+	}
+
 	public function collect(RegistryInterface $registry) : void {
 		$gauge = $registry
 			->getOrRegisterGauge(Metric::PREFIX, $this->getName(), "Currently loaded world", ["world", "world_folder"]);

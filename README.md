@@ -10,6 +10,18 @@ This exporter has been developed for use as a plugin on a [Pocketmine](https://g
 \Plutonium\PrometheusExporter\metrics\MetricsManager::registerMetric(new MyCustomMetric());
 ```
 
+### Snapshot metrics
+
+By default, metrics are collected into a registry kept for the whole server lifetime, so counters and histograms can accumulate between scrapes. As a consequence, a series that is no longer set keeps being exported with its last value.
+
+A metric whose label values can disappear (worlds, players…) should override `isSnapshot()` to return `true`. It is then collected into a registry rebuilt on every scrape: it must set all of its series on each `collect()`, and cannot use counters or histograms.
+
+```php
+public function isSnapshot() : bool {
+	return true;
+}
+```
+
 ## Default metrics
 
 | Name                                  | Description                              |

@@ -10,6 +10,10 @@ class WorldTickRate extends Metric {
 		return "world_tick_rate";
 	}
 
+	public function isSnapshot() : bool {
+		return true;
+	}
+
 	public function collect(RegistryInterface $registry) : void {
 		$gauge = $registry
 			->getOrRegisterGauge(Metric::PREFIX, $this->getName(), "Tick rate time(millisecond) of world", ["world", "world_folder"]);

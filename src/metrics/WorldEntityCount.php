@@ -13,6 +13,10 @@ class WorldEntityCount extends Metric {
 		return "world_entity_count";
 	}
 
+	public function isSnapshot() : bool {
+		return true;
+	}
+
 	public function collect(RegistryInterface $registry) : void {
 		$gauge = $registry
 			->getOrRegisterGauge(Metric::PREFIX, $this->getName(), "Count of entities by type", ["world", "world_folder", "type"]);

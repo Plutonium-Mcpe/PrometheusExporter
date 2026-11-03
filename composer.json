@@ -14,10 +14,25 @@
             "email": "contact@plutonium.best"
         }
     ],
+    "scripts": {
+        "cs": "php vendor/bin/php-cs-fixer fix --verbose",
+        "phpstan": "php vendor/bin/phpstan analyse --memory-limit=2G"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://composer.plutonium.best"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "amphp/http-server": "^2.0",
         "amphp/http-server-router": "^1.0",
         "promphp/prometheus_client_php": "^2.7"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.2",
+        "plutonium/pocketmine-mp": "^5.118"
     }
 }

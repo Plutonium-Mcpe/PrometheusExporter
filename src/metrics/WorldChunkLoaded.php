@@ -10,6 +10,10 @@ class WorldChunkLoaded extends Metric {
 		return "world_chunk_loaded";
 	}
 
+	public function isSnapshot() : bool {
+		return true;
+	}
+
 	public function collect(RegistryInterface $registry) : void {
 		$gauge = $registry
 			->getOrRegisterGauge(Metric::PREFIX, $this->getName(), "Loaded chunk count", ["world", "world_folder"]);

@@ -13,6 +13,6 @@ class MemoryMainThreadBytes extends Metric {
 	public function collect(RegistryInterface $registry) : void {
 		$registry
 			->getOrRegisterGauge(Metric::PREFIX, $this->getName(), "Memory usage of main thread")
-			->set(Process::getMemoryUsage());
+			->set(Process::getAdvancedMemoryUsage()[0]);
 	}
 }

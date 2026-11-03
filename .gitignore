@@ -6,3 +6,4 @@ dev/
 .idea/*
 !.idea/codeStyles/
 !.idea/fileTemplates/
+PrometheusExporter.phar

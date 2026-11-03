@@ -11,7 +11,7 @@ RUN make php/install && \
     make composer/install/prod && \
     make dev/PrometheusExporter.phar
 
-FROM alpine
+FROM alpine:3.24
 
 COPY --from=0 /app/dev/PrometheusExporter.phar /PrometheusExporter.phar
 
