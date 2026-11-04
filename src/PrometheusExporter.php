@@ -8,7 +8,6 @@ use Plutonium\PrometheusExporter\metrics\MetricsManager;
 use Plutonium\PrometheusExporter\tasks\ComposerRegisterAsyncTask;
 use Plutonium\PrometheusExporter\timings\Timing;
 use function pocketmine\critical_error;
-use pocketmine\plugin\DisablePluginException;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginDescription;
 use pocketmine\plugin\PluginLoader;
@@ -64,9 +63,10 @@ class PrometheusExporter extends PluginBase {
 		try {
 			$this->exporter->start();
 		} catch (RuntimeException $e) {
+			// Do not throw DisablePluginException: when loaded through a plugin loader such as PlutoniumEngine,
+			// it disables the loader too, and PocketMine then shuts the whole server down.
 			$this->getLogger()->error($e->getMessage());
-
-			throw new DisablePluginException();
+			$this->getLogger()->error("Metrics will not be exported. Check that host/port in config.yml are not already used by another process (e.g. another server on the same host).");
 		}
 	}
 
